@@ -362,7 +362,10 @@
     }
 
     initStatic();
-    window.addEventListener("load", () => ScrollTrigger.refresh());
+    // Recalculate trigger positions so anything already in view reveals at once.
+    // The page has often finished loading by now, so don't rely on "load" alone.
+    if (document.readyState === "complete") ScrollTrigger.refresh();
+    else window.addEventListener("load", () => ScrollTrigger.refresh());
   });
 
   /* ---------- Things that work with or without GSAP ---------- */
