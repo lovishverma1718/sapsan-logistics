@@ -12,6 +12,65 @@
 
   if (hasGSAP && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
 
+  /* ---------- Language (EN / FR) ---------- */
+  // English is the page source; French swaps text in from i18n-fr.js.
+  let lang = "en";
+  try { if (localStorage.getItem("sapsan-lang") === "fr") lang = "fr"; } catch (_) {}
+  const FR = lang === "fr" ? window.SAPSAN_FR : null;
+  const norm = (s) => s.replace(/\s+/g, " ").trim();
+  const T = (s) => (FR && FR.text[s]) || s;
+
+  function translatePage() {
+    html.lang = "fr-CA";
+    document.title = T(document.title);
+    $$("h1, h2, h3").forEach((el) => {
+      const v = FR.html[norm(el.innerHTML)];
+      if (v) el.innerHTML = v;
+    });
+    const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: (n) => (n.parentNode.closest("script, style, svg") ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT),
+    });
+    const nodes = [];
+    while (walk.nextNode()) nodes.push(walk.currentNode);
+    nodes.forEach((n) => {
+      const k = norm(n.nodeValue);
+      if (!k || !FR.text[k]) return;
+      n.nodeValue = n.nodeValue.match(/^\s*/)[0] + FR.text[k] + n.nodeValue.match(/\s*$/)[0];
+    });
+    ["placeholder", "aria-label", "alt", "title"].forEach((attr) => {
+      $$(`[${attr}]`).forEach((el) => {
+        const k = norm(el.getAttribute(attr));
+        if (FR.text[k]) el.setAttribute(attr, FR.text[k]);
+      });
+    });
+  }
+  if (FR) translatePage();
+  html.classList.remove("i18n-pending");
+
+  $$("[data-lang]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+    b.addEventListener("click", () => {
+      if (b.dataset.lang === lang) return;
+      try { localStorage.setItem("sapsan-lang", b.dataset.lang); } catch (_) {}
+      window.location.reload();
+    });
+  });
+
+  /* ---------- Manifesto: wrap words for the scroll lighting ---------- */
+  $$(".manifesto__text").forEach((m) => {
+    const frag = document.createDocumentFragment();
+    [...m.childNodes].forEach((n) => {
+      const red = n.nodeType === 1 && n.classList.contains("red");
+      n.textContent.split(/\s+/).filter(Boolean).forEach((word) => {
+        const w = document.createElement("span");
+        w.className = red ? "w red" : "w";
+        w.textContent = word;
+        frag.append(w, " ");
+      });
+    });
+    m.replaceChildren(frag);
+  });
+
   /* ---------- Smooth scroll ---------- */
   let lenis = null;
   if (!reduce && typeof window.Lenis !== "undefined") {
@@ -92,7 +151,7 @@
       try {
         await navigator.clipboard.writeText(b.dataset.copy);
         const t = b.textContent;
-        b.textContent = "Copied";
+        b.textContent = T("Copied");
         setTimeout(() => (b.textContent = t), 1600);
       } catch (_) { /* clipboard unavailable */ }
     });
@@ -294,13 +353,6 @@
       });
     }
 
-    // Process rail
-    const steps = $(".steps");
-    if (steps) {
-      gsap.to(".steps__rail i", { scaleY: 1, ease: "none", scrollTrigger: { trigger: steps, start: "top 60%", end: "bottom 60%", scrub: true } });
-      $$(".step", steps).forEach((s) => ScrollTrigger.create({ trigger: s, start: "top 62%", onToggle: (st) => s.classList.toggle("is-on", st.isActive || st.progress > 0), end: "max" }));
-    }
-
     // Footer wordmark letters
     const word = $(".footer__word");
     if (word) {
@@ -316,7 +368,6 @@
   /* ---------- Things that work with or without GSAP ---------- */
   function initStatic() {
     initMap();
-    initIndustries();
     initMagnetic();
     initSubnav();
     initForms();
@@ -349,6 +400,12 @@
 
       const g = document.createElementNS(NS, "g");
       g.setAttribute("class", c.minor ? "city minor" : "city");
+      g.setAttribute("tabindex", "0");
+      g.setAttribute("role", "button");
+      g.setAttribute("aria-label", `${c.name}, ≈ ${c.km.toLocaleString("en-CA")} km`);
+      const hit = document.createElementNS(NS, "circle");
+      hit.setAttribute("cx", x); hit.setAttribute("cy", y); hit.setAttribute("r", 14); hit.setAttribute("class", "hit");
+      g.appendChild(hit);
       const dot = document.createElementNS(NS, "circle");
       dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("r", 4);
       g.appendChild(dot);
@@ -389,14 +446,13 @@
       io.observe(svg);
     } else draw();
 
-    const btns = $$(".lane[data-city]");
     const activate = (name) => {
       Object.values(byName).forEach(({ path, g }) => { path.classList.remove("is-active"); g.classList.remove("is-active"); });
-      btns.forEach((b) => b.classList.toggle("is-active", b.dataset.city === name));
       const it = byName[name];
       if (!it) return;
       it.path.classList.add("is-active"); it.g.classList.add("is-active");
       arcs.appendChild(it.path);
+      dots.appendChild(it.g); // keep the active label on top
       if (readCity) readCity.textContent = `Moncton → ${it.c.name}`;
       if (readKm) {
         const end = it.c.km;
@@ -407,42 +463,24 @@
         readKm.dataset.v = end;
       }
     };
-    let auto = true, idx = 0;
-    const order = btns.map((b) => b.dataset.city);
-    btns.forEach((b) => {
-      const go = () => { auto = false; activate(b.dataset.city); };
-      b.addEventListener("mouseenter", go);
-      b.addEventListener("focus", go);
-      b.addEventListener("click", go);
+    // Cycle through the cities until the visitor picks one
+    let auto = true, idx = 0, inView = false;
+    const order = cities.map((c) => c.name);
+    Object.values(byName).forEach(({ g, c }) => {
+      const go = () => { auto = false; activate(c.name); };
+      g.addEventListener("mouseenter", go);
+      g.addEventListener("focus", go);
+      g.addEventListener("click", go);
+      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
     });
+    if ("IntersectionObserver" in window) new IntersectionObserver((es) => { inView = es[0].isIntersecting; }).observe(svg);
+    else inView = true;
     activate(order[0]);
     setInterval(() => {
-      if (!auto || document.hidden) return;
+      if (!auto || !inView || document.hidden) return;
       idx = (idx + 1) % order.length;
       activate(order[idx]);
     }, 2600);
-  }
-
-  /* ---------- Industries hover image ---------- */
-  function initIndustries() {
-    const list = $(".ind");
-    const fl = $(".ind__float");
-    if (!list || !fl || !fine) return;
-    const imgs = $$("img", fl);
-    let x = 0, y = 0, cx = 0, cy = 0, on = false;
-    $$(".ind__row", list).forEach((r, i) => {
-      r.addEventListener("mouseenter", () => { imgs.forEach((im, j) => im.classList.toggle("is-on", j === i)); });
-    });
-    list.addEventListener("mouseenter", () => { on = true; fl.classList.add("is-on"); });
-    list.addEventListener("mouseleave", () => { on = false; fl.classList.remove("is-on"); });
-    window.addEventListener("mousemove", (e) => { x = e.clientX; y = e.clientY; }, { passive: true });
-    const loop = () => {
-      cx += (x - cx) * 0.14; cy += (y - cy) * 0.14;
-      fl.style.left = cx + 120 + "px";
-      fl.style.top = cy + "px";
-      requestAnimationFrame(loop);
-    };
-    loop();
   }
 
   /* ---------- Magnetic buttons ---------- */

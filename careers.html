@@ -16,7 +16,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/css/style.css">
-<script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(sessionStorage.getItem('sapsan-loaded'))h.classList.add('no-loader');if(sessionStorage.getItem('sapsan-tx')){h.classList.add('from-transition','no-loader');sessionStorage.removeItem('sapsan-tx')}}catch(e){}})(document)</script>
+<script>(function(d){var h=d.documentElement;h.classList.add('js');try{if(sessionStorage.getItem('sapsan-loaded'))h.classList.add('no-loader');if(sessionStorage.getItem('sapsan-tx')){h.classList.add('from-transition','no-loader');sessionStorage.removeItem('sapsan-tx')}}catch(e){}try{if(localStorage.getItem('sapsan-lang')==='fr'){h.lang='fr-CA';h.classList.add('i18n-pending');setTimeout(function(){h.classList.remove('i18n-pending')},2500)}}catch(e){}})(document)</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -25,10 +25,11 @@
   <div class="wrap header__in">
     <a class="brand" href="index.html" aria-label="Sapsan Logistics Inc — home">
       <img class="brand__mark" src="assets/img/falcon.svg" alt="" width="40" height="45">
-      <span class="brand__word"><span class="brand__name">SAPSAN</span><span class="brand__sub">LOGISTICS INC</span></span>
+      <span class="brand__word"><span class="brand__name">SAPSAN</span></span>
     </a>
     <nav class="nav" aria-label="Primary"><a href="index.html">Home</a><a href="about.html">About</a><a href="services.html">Services</a><a href="careers.html" aria-current="page">Drive With Us</a><a href="contact.html">Contact</a></nav>
     <div class="header__cta">
+      <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="fr" aria-pressed="false">FR</button></div>
       <a class="header__phone" href="tel:+15062696967"><span class="live-dot" aria-hidden="true"></span>(506) 269-6967</a>
       <a class="btn" href="contact.html#quote" data-magnetic>Get a quote <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
     </div>
@@ -39,6 +40,7 @@
   <nav aria-label="Mobile"><a href="index.html"><small>01</small>Home</a><a href="about.html"><small>02</small>About</a><a href="services.html"><small>03</small>Services</a><a href="careers.html"><small>04</small>Drive With Us</a><a href="contact.html"><small>05</small>Contact</a></nav>
   <div class="mmenu__foot">
     <span class="mono">Dispatch · 24/7</span>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en" aria-pressed="true">EN</button><button type="button" data-lang="fr" aria-pressed="false">FR</button></div>
     <a href="tel:+15062696967">(506) 269-6967</a>
     <a href="mailto:dispatch@sapsan.ca">dispatch@sapsan.ca</a>
   </div>
@@ -85,14 +87,14 @@
       <a class="btn btn--dark" href="#apply" data-role="Company Driver — Long Haul">Apply <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
     </div><div class="role" data-reveal>
       <div><h3 class="h3">Company Driver — Regional</h3><span class="mono" style="color:var(--red)">Class 1</span><div class="role__tags"><span>Full-time</span><span>Regional</span><span>Moncton, NB</span></div></div>
-      <p>Atlantic Canada, Québec and Ontario lanes with more nights at home. Dry van, reefer and flatbed experience welcome.</p>
+      <p>Atlantic Canada, Québec and Ontario lanes with more nights at home. Dry van and reefer experience welcome.</p>
       <a class="btn btn--dark" href="#apply" data-role="Company Driver — Regional">Apply <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
     </div><div class="role" data-reveal>
       <div><h3 class="h3">Owner-Operator</h3><span class="mono" style="color:var(--red)">Your truck, our freight</span><div class="role__tags"><span>Lease-on</span><span>Canada ⇄ USA</span><span>Flexible</span></div></div>
       <p>Lease on with a carrier that respects your business. Consistent loads, transparent settlements and fast, reliable pay.</p>
       <a class="btn btn--dark" href="#apply" data-role="Owner-Operator">Apply <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
     </div><div class="role" data-reveal>
-      <div><h3 class="h3">Dispatcher / Operations</h3><span class="mono" style="color:var(--red)">Office · Moncton</span><div class="role__tags"><span>Full-time</span><span>On-site</span><span>Suite 307</span></div></div>
+      <div><h3 class="h3">Dispatcher / Operations</h3><span class="mono" style="color:var(--red)">Office · Moncton</span><div class="role__tags"><span>Full-time</span><span>On-site</span><span>Suite 305</span></div></div>
       <p>Plan loads, support drivers and keep customers informed. Logistics experience is an asset; a calm head on a busy day is a must.</p>
       <a class="btn btn--dark" href="#apply" data-role="Dispatcher / Operations">Apply <svg class="arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg></a>
     </div></div>
@@ -140,8 +142,8 @@
             <div class="field"><label for="a-role">Position</label>
               <select id="a-role" name="role" data-label="Position" required>
                 <option value="">Select a position</option>
-                <option>Company Driver — Long Haul</option><option>Company Driver — Regional</option><option>Owner-Operator</option><option>Dispatcher / Operations</option>
-                <option>Other</option>
+                <option value="Company Driver — Long Haul">Company Driver — Long Haul</option><option value="Company Driver — Regional">Company Driver — Regional</option><option value="Owner-Operator">Owner-Operator</option><option value="Dispatcher / Operations">Dispatcher / Operations</option>
+                <option value="Other">Other</option>
               </select></div>
             <div class="field"><label for="a-exp">Years of experience</label>
               <select id="a-exp" name="experience" data-label="Experience">
@@ -187,9 +189,9 @@
       <div class="footer__lead">
         <a class="brand" href="index.html" aria-label="Sapsan Logistics Inc — home">
           <img class="brand__mark" src="assets/img/falcon.svg" alt="" width="40" height="45">
-          <span class="brand__word"><span class="brand__name">SAPSAN</span><span class="brand__sub">LOGISTICS INC</span></span>
+          <span class="brand__word"><span class="brand__name">SAPSAN</span></span>
         </a>
-        <p>Driven by trust. Delivering your future. Truckload, temperature-controlled, flatbed and cross-border freight from Moncton, New Brunswick.</p>
+        <p>Driven by trust. Delivering your future. Truckload, temperature-controlled, LTL and cross-border freight from Moncton, New Brunswick.</p>
       </div>
       <div>
         <h4>Company</h4>
@@ -197,7 +199,7 @@
       </div>
       <div>
         <h4>Services</h4>
-        <ul><li><a href="services.html#truckload">Full truckload</a></li><li><a href="services.html#reefer">Reefer</a></li><li><a href="services.html#flatbed">Flatbed</a></li><li><a href="services.html#cross-border">Cross-border</a></li></ul>
+        <ul><li><a href="services.html#truckload">Full truckload</a></li><li><a href="services.html#reefer">Reefer</a></li><li><a href="services.html#ltl">LTL &amp; partial</a></li><li><a href="services.html#cross-border">Cross-border</a></li></ul>
       </div>
       <div>
         <h4>Talk to us</h4>
@@ -205,7 +207,7 @@
       </div>
       <div>
         <h4>Office</h4>
-        <address>Suite 307, 95 Millennium Blvd<br>Moncton, NB E1E 2G7<br>Canada</address>
+        <address>Suite 305, 95 Millennium Blvd<br>Moncton, NB E1E 2G7<br>Canada</address>
       </div>
     </div>
   </div>
@@ -220,6 +222,7 @@
 <script src="assets/js/ScrollTrigger.min.js" defer></script>
 <script src="assets/js/lenis.min.js" defer></script>
 <script>document.querySelectorAll("[data-role]").forEach(function(a){a.addEventListener("click",function(){var s=document.getElementById("a-role");if(s)s.value=a.dataset.role;});});</script>
+<script src="assets/js/i18n-fr.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>
